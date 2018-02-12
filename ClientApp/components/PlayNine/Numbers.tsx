@@ -7,7 +7,8 @@ interface NumbersState {
 }
 interface NumbersProps {
     selectedNumbers: number[],
-    selectNumber: (num: number) => void;
+    selectNumberFunc: (num: number) => void;
+    usedNumbers: number[]
 }
 export class Numbers extends React.Component<NumbersProps, NumbersState>{
     constructor() {
@@ -23,18 +24,20 @@ export class Numbers extends React.Component<NumbersProps, NumbersState>{
     getClassName(num: number): string {
         if (this.props.selectedNumbers.indexOf(num) >= 0)
             return "selected";
+        if (this.props.usedNumbers.indexOf(num) >= 0)
+            return "used";
         else
             return "number-span";
     }
 
-   
+
 
     public render() {
         return <div className="well text-center">
             <div>
                 {
                     this.state.numbersArray.map(num => <span key={num} className={this.getClassName(num)}
-                        onClick={() => this.props.selectNumber(num)}> {num}</span>)
+                        onClick={() => this.props.selectNumberFunc(num)}> {num}</span>)
                 }
 
             </div>
