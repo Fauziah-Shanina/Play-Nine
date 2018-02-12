@@ -4,12 +4,15 @@ import { Stars } from './Stars';
 import { Button } from './Button';
 import { Answer } from './Answer';
 import { Numbers } from './Numbers'
+import { DoneFrame } from './DoneFrame'
 
 interface PlayNineState {
     starsNumber: number;
     selectedNumbers: number[];
-    usedNumbers : number[];
-    isAnswerCorrect: number
+    usedNumbers: number[];
+    isAnswerCorrect: number,
+    reDrawRate: number,
+    doneStatus: string
 
 
 }
@@ -20,12 +23,17 @@ export class PlayNine extends React.Component<RouteComponentProps<{}>, PlayNineS
         this.state = this.getInitialize();
 
     }
+
+    static generateRandomNumber = () => { return 1 + Math.floor(Math.random() * 9) }
     getInitialize(): PlayNineState {
         return {
-            starsNumber: 1 + Math.floor(Math.random() * 9),
+
+            starsNumber: PlayNine.generateRandomNumber(),
             selectedNumbers: [],
-            usedNumbers :[],
-            isAnswerCorrect: 0
+            usedNumbers: [],
+            isAnswerCorrect: 0,
+            reDrawRate: 5,
+            doneStatus: ''
 
         }
     }
@@ -55,31 +63,49 @@ export class PlayNine extends React.Component<RouteComponentProps<{}>, PlayNineS
 
     }
 
-    acceptAnswer =()=>{
-        this.setState (
+    acceptAnswer = () => {
+        this.setState(
             {
                 usedNumbers: this.state.usedNumbers.concat(this.state.selectedNumbers),
-                selectedNumbers:[],
-                isAnswerCorrect :0,
-                starsNumber: 1 + Math.floor(Math.random() * 9),
+                selectedNumbers: [],
+                isAnswerCorrect: 0,
+                starsNumber: PlayNine.generateRandomNumber()
             }
         );
-        
+
+    }
+
+    reDrawGame = () => {
+        if (this.state.reDrawRate === 0) return
+        this.setState(
+            {
+                starsNumber: PlayNine.generateRandomNumber(),
+                selectedNumbers: [],
+                isAnswerCorrect: 0,
+                reDrawRate: this.state.reDrawRate - 1
+
+            }
+        )
+
+
     }
 
 
     public render() {
-        const { selectedNumbers, starsNumber ,isAnswerCorrect,usedNumbers} = this.state;
+        const { selectedNumbers, starsNumber, isAnswerCorrect, usedNumbers, reDrawRate, doneStatus } = this.state;
         return <div className="container">
             <h1>Play Nine</h1>
             <hr />
             <div className="row">
                 <Stars numberOfStars={starsNumber} />
-                <Button selectedNumbers={selectedNumbers} checkAnswerFunc={this.checkTheAnswer} acceptAnswerFunc={this.acceptAnswer} isAnswerCorrect = {isAnswerCorrect}/>
+                <Button selectedNumbers={selectedNumbers} checkAnswerFunc={this.checkTheAnswer} acceptAnswerFunc={this.acceptAnswer}
+                    isAnswerCorrect={isAnswerCorrect} reDrawFun={this.reDrawGame} reDrawRate={reDrawRate} />
                 <Answer selectedNumbers={selectedNumbers} deSelectNumberFunc={num => this.deSelectNumberGame(num)} />
             </div>
             <br />
-            <Numbers selectedNumbers={selectedNumbers} selectNumberFunc={num => this.selectNumberGame(num)} usedNumbers={usedNumbers} />
+            {doneStatus === "" ? <Numbers selectedNumbers={selectedNumbers} selectNumberFunc={num => this.selectNumberGame(num)} usedNumbers={usedNumbers} /> :
+                <DoneFrame doneStatus={doneStatus} />}
+
 
         </div>;
     }

@@ -6,6 +6,8 @@ interface ButtonProps {
     checkAnswerFunc: () => void,
     isAnswerCorrect:number
     acceptAnswerFunc: ()=>void
+    reDrawFun : () =>void;
+    reDrawRate:number
 
 }
 export class Button extends React.Component<ButtonProps>{
@@ -45,8 +47,8 @@ export class Button extends React.Component<ButtonProps>{
 
             {button}
             <br/> <br/>
-            <button className="btn btn-warning btn-sm">
-                <i className="glyphicon glyphicon-refresh"></i>
+            <button className="btn btn-warning btn-sm" onClick={this.props.reDrawFun} disabled={this.props.reDrawRate===0}>
+                <i className="glyphicon glyphicon-refresh"> {this.props.reDrawRate}</i>
             </button>
         </div>;
     }
